@@ -24,12 +24,36 @@
     <ClCompile Include="TankBattle-AI\braincpp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TankBattle-AI\Math\Vector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TankBattle-AI\Math\Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TankBattleHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TankBattle-AI\brain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TankBattle-AI\Math\Vec4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TankBattle-AI\Math\Vec3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TankBattle-AI\Math\TemplateMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TankBattle-AI\Math\Vec2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TankBattle-AI\Math\Matrix4.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TankBattle-AI\Math\Matrix3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

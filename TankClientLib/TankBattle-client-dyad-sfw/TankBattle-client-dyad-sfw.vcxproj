@@ -133,9 +133,17 @@
     <ClCompile Include="..\libs\dyad\dyad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TankBattle-AI\braincpp.cpp" />
+    <ClCompile Include="TankBattle-AI\Math\Matrix.cpp" />
+    <ClCompile Include="TankBattle-AI\Math\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TankBattle-AI\brain.h" />
+    <ClInclude Include="TankBattle-AI\Math\Matrix3.h" />
+    <ClInclude Include="TankBattle-AI\Math\Matrix4.h" />
+    <ClInclude Include="TankBattle-AI\Math\TemplateMath.h" />
+    <ClInclude Include="TankBattle-AI\Math\Vec2.h" />
+    <ClInclude Include="TankBattle-AI\Math\Vec3.h" />
+    <ClInclude Include="TankBattle-AI\Math\Vec4.h" />
     <ClInclude Include="TankBattleHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <sstream>
 
+#include "TankBattle-AI\brain.h"
 #include "TankBattleNet.h"
 #include "sfwdraw.h"
 #undef NONE     // sfw defines NONE as one of its colors; we won't be needing that
@@ -23,23 +24,50 @@ const char GAME_QUIT = 'L';
 const int WINDOW_HEIGHT = 800;
 const int WINDOW_WIDTH = 400;
 
-// Polls all printable characters for a key press
-// Returns true if a key press was detected, otherwise returns false
-bool inputPressed()
+tankNet::TankBattleCommand clientData()
 {
-    // 32 is the ASCII code for the first printable character, while 255 is the last
-    for (unsigned int i = 32; i < 255; ++i)
-    {
-        if (sfw::getKey(i))
-            return true;
-    }
+	tankNet::TankBattleCommand data;
+	//tank actions
+	data.tankMove = decisions.body_up ? tankNet::TankMovementOptions::FWRD :
+		decisions.body_down ? tankNet::TankMovementOptions::BACK :
+		decisions.body_left ? tankNet::TankMovementOptions::LEFT :
+		decisions.body_right ? tankNet::TankMovementOptions::RIGHT :
+		tankNet::TankMovementOptions::HALT;
 
-    return false;
+	data.cannonMove = decisions.cannon_left ? tankNet::CannonMovementOptions::LEFT :
+		decisions.cannon_right ? tankNet::CannonMovementOptions::RIGHT :
+		tankNet::CannonMovementOptions::HALT;
+
+	data.fireWish = decisions.fire;
+
+	//game actions
+	if (sfw::getKey(GAME_QUIT))
+	{
+		data.msg = tankNet::TankBattleMessage::QUIT;
+	}
+
+	return data;
 }
+
+
+enum ServerName
+{
+	HOME,
+	TUNG
+};
+char *getIP(ServerName sn)
+{
+	switch (sn)
+	{
+	case TUNG: return "10.15.22.46";
+	default: return "";
+	}
+}
+
 
 int main(int argc, char** argv)
 {
-    char * serverIPAddress = "";
+    char * serverIPAddress = getIP(HOME);
 
     // handle console arguments
     if (argc > 2)
@@ -114,37 +142,8 @@ int main(int argc, char** argv)
             sfw::drawString(font, debugStrings.str().c_str(), 0, WINDOW_HEIGHT, 15, 15);
 
             // prepare message
-            tankNet::TankBattleCommand ex;
-            ex.msg = tankNet::TankBattleMessage::NONE;
-            ex.tankMove = tankNet::TankMovementOptions::HALT;
-            ex.cannonMove = tankNet::CannonMovementOptions::HALT;
-
-            // poll for input
-            if (inputPressed())
-            {
-                // tank actions
-                ex.tankMove = sfw::getKey(TANK_FWRD) ? tankNet::TankMovementOptions::FWRD :
-                    sfw::getKey(TANK_BACK) ? tankNet::TankMovementOptions::BACK :
-                    sfw::getKey(TANK_LEFT) ? tankNet::TankMovementOptions::LEFT :
-                    sfw::getKey(TANK_RIGT) ? tankNet::TankMovementOptions::RIGHT :
-                    tankNet::TankMovementOptions::HALT;
-
-                ex.cannonMove = sfw::getKey(CANN_LEFT) ? tankNet::CannonMovementOptions::LEFT :
-                    sfw::getKey(CANN_RIGT) ? tankNet::CannonMovementOptions::RIGHT :
-                    tankNet::CannonMovementOptions::HALT;
-
-                ex.fireWish = sfw::getKey(TANK_FIRE);
-
-                // game actions
-                if (sfw::getKey(GAME_QUIT))
-                {
-                    ex.msg = tankNet::TankBattleMessage::QUIT;
-                    break;
-                }
-            }
-
-            // begin transmission
-            tankNet::send(ex);
+			leka.update(state);
+			send(clientData());
         }
     }
     else

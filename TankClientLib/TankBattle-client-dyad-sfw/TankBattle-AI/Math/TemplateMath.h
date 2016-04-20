@@ -1,7 +1,5 @@
 #pragma once
-#include "../../Rendering/sfwdraw.h"
 #include <cmath>
-using namespace sfw;
 
 #define PI 3.14159265358979323846264338327950288419716939937510f
 #define RAD2DEG 57.2958f

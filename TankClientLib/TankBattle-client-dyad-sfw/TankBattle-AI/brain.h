@@ -98,7 +98,8 @@ namespace tankBot
 	struct s_wander
 	{
 		int hasActiveNode = 0;
-		float travelTime = 1.0f;
+		const float maxTime = 1.5f;
+		float travelTime = 0.0f;
 		Vec2 node;
 	};
 }

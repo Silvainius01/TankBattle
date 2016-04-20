@@ -2,11 +2,10 @@
 using namespace cml;
 
 float Vec2::getMag() { return pythag(x, y); }
-float Vec2::getAngle() { return atan2(x, y) * RAD2DEG; }
+float Vec2::getAngle() { return atan2(y, x) * RAD2DEG; }
 float Vec2::getAngleBetween(Vec2 v2) 
 { 
-	if (x < v2.x) { return (atan((y - v2.y) / (x - v2.x)) * RAD2DEG) + 180; }
-	return atan((y - v2.y) / (x - v2.x)) * RAD2DEG;
+	return atan2(v2.y - y, v2.x - x) * RAD2DEG;
 }
 float Vec2::getDot(Vec2 v2)
 {

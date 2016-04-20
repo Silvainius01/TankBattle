@@ -47,20 +47,25 @@ void Leka::wander()
 	switch (WanderData.hasActiveNode)
 	{
 	case 1:
-		angle = WanderData.node.getAngle() - b_dir;
-		cout << angle;
-		if (abs(angle) > 3.0f)
+		angle = pos.getAngleBetween(WanderData.node) - b_dir;
+		if (abs(angle) > 2.0f)
 		{
 			if (angle > 0) { decisions.body_left = 1; }
 			else { decisions.body_right = 1; }
+			WanderData.travelTime += sfw::getDeltaTime();
+			if (WanderData.travelTime >= WanderData.maxTime)
+				WanderData.hasActiveNode = 0;
 		}
 		else
+		{
+			WanderData.travelTime = 0.0f;
 			WanderData.hasActiveNode = 2;
+		}
 		break;
 	case 2:
 		decisions.body_up = 1;
-		WanderData.travelTime -= sfw::getDeltaTime();
-		if ((WanderData.node - pos).getMag() <= 0.5f || WanderData.travelTime <= 0.0f)
+		WanderData.travelTime += sfw::getDeltaTime();
+		if ((WanderData.node - pos).getMag() <= 0.5f || WanderData.travelTime >= WanderData.maxTime)
 		{
 			WanderData.hasActiveNode = 0;
 		}
@@ -68,16 +73,19 @@ void Leka::wander()
 	default:
 		angle = (std::rand() % 360) * DEG2RAD;
 		WanderData.node = Vec2{ cos(angle), sin(angle) } *25.0f;
-		WanderData.node += pos;
+		//WanderData.node += pos;
 		WanderData.hasActiveNode = 1;
-		WanderData.travelTime = 1.0f;
+		WanderData.travelTime = 0.0f;
 		if (WanderData.node.x > 45.0f) { WanderData.node.x = 45.0f; }
 		else if (WanderData.node.x < -45.0f) { WanderData.node.x = -45.0f; }
 		if (WanderData.node.y > 45.0f) { WanderData.node.y = 45.0f; }
 		else if (WanderData.node.y < -45.0f) { WanderData.node.y = -45.0f; }
+
 		WanderData.node.print();
+		cout << " " << pos.getAngleBetween(WanderData.node);
+		cout << endl;
 	}
-	cout << endl;
+	
 }
 
 
