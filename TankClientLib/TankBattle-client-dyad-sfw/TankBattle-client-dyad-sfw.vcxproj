@@ -132,8 +132,10 @@
   <ItemGroup>
     <ClCompile Include="..\libs\dyad\dyad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TankBattle-AI\braincpp.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="TankBattle-AI\brain.h" />
     <ClInclude Include="TankBattleHeader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
