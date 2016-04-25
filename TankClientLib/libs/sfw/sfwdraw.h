@@ -86,6 +86,9 @@ NOTE: YOU MUST CALL initContext for any of the functions to work!
 
 namespace sfw
 {
+
+	
+
 	//Identity transformation matrix, primarily for internal use.
 	const float identity[16] = {1,0,0,0,  0,1,0,0, 0,0,1,0, 0,0,0,1};
 
@@ -236,9 +239,6 @@ namespace sfw
 
 	// buttons are at least simpler.
 	bool		getGamepadButton(unsigned gamepadIndex, unsigned buttonIndex);
-
-
-
-
-
 }
+
+

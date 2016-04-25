@@ -1,7 +1,7 @@
 #include <iostream>
 #include <sstream>
 
-#include "TankBattle-AI\brain.h"
+#include "TankBattle-AI\Leka.h"
 #include "TankBattleNet.h"
 #include "sfwdraw.h"
 #undef NONE     // sfw defines NONE as one of its colors; we won't be needing that
@@ -22,7 +22,7 @@ const char CANN_RIGT = 'E';
 const char GAME_QUIT = 'L';
 
 const int WINDOW_HEIGHT = 800;
-const int WINDOW_WIDTH = 400;
+const int WINDOW_WIDTH = 800;
 
 tankNet::TankBattleCommand clientData()
 {
@@ -53,13 +53,20 @@ tankNet::TankBattleCommand clientData()
 enum ServerName
 {
 	HOME,
-	TUNG
+	TUNG,
+	NICOLE, NICOLE2
 };
 char *getIP(ServerName sn)
 {
+	//My IPs
+	//School Ether: 10.15.22.133
+	//School Wi-Fi: 10.15.22.125
+	//		  Home:
 	switch (sn)
 	{
 	case TUNG: return "10.15.22.46";
+	case NICOLE: return "10.15.22.118";
+	case NICOLE2: return "10.15.22.140";
 	default: return "";
 	}
 }
@@ -106,7 +113,7 @@ int main(int argc, char** argv)
 
         // initialize SFW and assets
         sfw::initContext(WINDOW_WIDTH, WINDOW_HEIGHT, "TankController");
-        unsigned font = sfw::loadTextureMap("./res/fontmap.png", 16, 16);
+		unsigned font = sfw::loadTextureMap("./res/fontmap.png", 16, 16);
 
         while (sfw::stepContext() && tankNet::isConnected() && tankNet::isProvisioned())
         {
@@ -140,6 +147,7 @@ int main(int argc, char** argv)
             }
 
             sfw::drawString(font, debugStrings.str().c_str(), 0, WINDOW_HEIGHT, 15, 15);
+			
 
             // prepare message
 			leka.update(state);
