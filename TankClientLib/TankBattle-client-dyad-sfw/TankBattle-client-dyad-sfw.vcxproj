@@ -132,6 +132,14 @@
   <ItemGroup>
     <ClCompile Include="..\libs\dyad\dyad.c" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="TankBattle-AI\Graph\graph.cpp" />
+    <ClCompile Include="TankBattle-AI\Math\source\Matrix.cpp" />
+    <ClCompile Include="TankBattle-AI\Math\source\Vector.cpp" />
+    <ClCompile Include="TankBattle-AI\source\LekaBaseMove.cpp" />
+    <ClCompile Include="TankBattle-AI\source\LekaCore.cpp" />
+    <ClCompile Include="TankBattle-AI\source\LekaMisc.cpp" />
+    <ClCompile Include="TankBattle-AI\source\LekaRoutines.cpp" />
+    <ClCompile Include="TankBattle-AI\source\LekaTesters.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AutoAgent.h" />
@@ -140,6 +148,16 @@
     <ClInclude Include="HumanAgent.h" />
     <ClInclude Include="IAgent.h" />
     <ClInclude Include="Solver.h" />
+    <ClInclude Include="TankBattle-AI\Graph\graph.h" />
+    <ClInclude Include="TankBattle-AI\Leka.h" />
+    <ClInclude Include="TankBattle-AI\LekaEnvData.h" />
+    <ClInclude Include="TankBattle-AI\LekaStateData.h" />
+    <ClInclude Include="TankBattle-AI\Math\Matrix3.h" />
+    <ClInclude Include="TankBattle-AI\Math\Matrix4.h" />
+    <ClInclude Include="TankBattle-AI\Math\TemplateMath.h" />
+    <ClInclude Include="TankBattle-AI\Math\Vec2.h" />
+    <ClInclude Include="TankBattle-AI\Math\Vec3.h" />
+    <ClInclude Include="TankBattle-AI\Math\Vec4.h" />
     <ClInclude Include="TankBattleHeader.h" />
     <ClInclude Include="Vector2.h" />
   </ItemGroup>
