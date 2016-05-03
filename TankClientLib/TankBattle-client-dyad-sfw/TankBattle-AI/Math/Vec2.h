@@ -17,6 +17,7 @@ namespace cml
 
 		Vec2() { x = 0, y = 0; }
 		Vec2(float X, float Y) : x(X), y(Y) {}
+<<<<<<< HEAD
 		Vec2(float degrees) : x(cosf(degrees)), y(sinf(degrees)) {}
 
 		//Returns the magnitude
@@ -31,15 +32,27 @@ namespace cml
 		//	zero360: returns an angle {0 <-> 359} or {0 <-> 2Pi}
 		//	radians: returns answer in {-Pi <-> Pi} radians
 		float getAngleBetween( Vec2 &v2, bool zero360 = false, bool radians = false);
+=======
+
+		//Returns the magnitude
+		float getMag();
+		//Returns the angle relative to the global X-Axis
+		float getAngle();
+		//Returns the angle relative to another vector
+		float getAngleBetween(Vec2 v2);
+>>>>>>> origin/dev
 		//Calculates and returns the dot product with the passed vector
 		float getDot(Vec2 v2);
 		//Return the distance between two vectors
 		float getDistBetween(Vec2 v2);
+<<<<<<< HEAD
 		//Return the slope (m) between the vector and the origin
 		float getSlope();
 		//Return the slope (m) between this vector and the passed one
 		//	yInt: returns the Y-Intercept (b) instead of the slope
 		float getSlopeBetween(Vec2 v2, bool yInt = false);
+=======
+>>>>>>> origin/dev
 		//Returns the normal
 		Vec2 getNormal();
 		//Returns the perpendicular
@@ -66,7 +79,10 @@ namespace cml
 		Vec2 operator/(Vec2 &v2);
 		Vec2 &operator/=(Vec2 &v2);
 		Vec2 &operator=(const Vec2 &v2);
+<<<<<<< HEAD
 		Vec2 &operator=(float a);
+=======
+>>>>>>> origin/dev
 		Vec2 operator*(float a);
 		Vec2 &operator*=(float a);
 		Vec2 operator/(const float a);

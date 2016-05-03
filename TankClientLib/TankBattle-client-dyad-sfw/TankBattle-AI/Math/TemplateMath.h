@@ -16,7 +16,11 @@ namespace cml
 	}
 
 	template<typename T = float>
+<<<<<<< HEAD
 	T expo(const T base, const int power)
+=======
+	T expo(const T base, const T power)
+>>>>>>> origin/dev
 	{
 		float ans = base;
 		if (power >= 2)
@@ -28,14 +32,21 @@ namespace cml
 		else if (power == 0) { return 1; }
 		else if (power < 0)
 		{
+<<<<<<< HEAD
 			for (int a = 1; a > power; a--) { ans *= base; }
+=======
+			for (int a = -1; a > power; a--) { ans *= base; }
+>>>>>>> origin/dev
 			return 1 / ans;
 		}
 	}
 
 	template <typename T = float>
 	T pythag(T a, T b) { return sqrt(expo(a, 2.0f) + expo(b, 2.0f)); }
+<<<<<<< HEAD
 
 	template <typename T = float>
 	T slope(T m, T x, T b) { return (m * x) + b; }
+=======
+>>>>>>> origin/dev
 }

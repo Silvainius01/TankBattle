@@ -1,5 +1,6 @@
 #pragma once
 
+<<<<<<< HEAD
 #include "Graph\graph.h"
 #include "LekaEnvData.h"
 #include "sfwdraw.h"
@@ -46,11 +47,49 @@ namespace tankBot
 		//  to the movement functions, who do the dirty work of getting there.
 		//They also have limited surveying capabilities, incase the statemachine
 		//	missed something and the current state needs to change ASAP. 
+=======
+#include "StateData.h"
+
+#define CS_NULL CommandSend{0,0,0,0,0,0,0}
+
+namespace tankBot
+{
+	struct Enemy
+	{
+	public:
+
+		TankTacticalInfo player;
+		Vec2 lastPos[3];
+		Vec2 lastDir;
+
+		void setData(TankBattleStateData *info, int player);
+		Vec2 averagePos();
+	};
+
+	class Leka
+	{
+	private:
+		friend struct Enemy;
+
+		BodyState s_Body = WANDER;
+		CannonState s_Cannon = SCAN;
+		tankNet::TankBattleStateData *me;
+
+		Enemy enemy[3];
+		Vec2 pos;
+		float b_dir;
+		float c_dir;
+
+		BodyState optimalState();
+		int weakestEnemy(bool returnHP = false);
+		int closestEnemy();
+>>>>>>> origin/dev
 
 		void wander(s_wander &data);
 		void pursue();
 		void search();
 		void hide();
+<<<<<<< HEAD
 		void aim();
 		void scan();
 
@@ -84,10 +123,25 @@ namespace tankBot
 		}
 		TankBattleCommand update(TankBattleStateData *info);
 	};	
+=======
+
+		void aim();
+		void scan();
+
+		void brain();
+
+	public:
+		Leka(void) {}
+		void update(TankBattleStateData *info);
+	};
+
+	
+>>>>>>> origin/dev
 }
 
 extern tankBot::Leka leka;
 extern tankBot::CommandSend decisions;
+<<<<<<< HEAD
 
 const int WINDOW_HEIGHT = 800;
 const int WINDOW_WIDTH = 1200;
@@ -101,3 +155,5 @@ extern Vec2 ccts(float mx, float my);
 extern float gth(float val);
 //Makes an x on the server an x on the client
 extern float gtw(float val);
+=======
+>>>>>>> origin/dev
