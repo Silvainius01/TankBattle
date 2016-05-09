@@ -6,6 +6,7 @@ Leka leka;
 CommandSend decisions;
 Vec2 manualBodTarget;
 Vec2 manualCanTarget;
+int counter = 0;
 bool playerOverride = true;
 bool first = true;
 bool clicked2 = false;
@@ -33,10 +34,15 @@ TankBattleCommand Leka::update(TankBattleStateData *info)
 			if (!clicked2 && sfw::getMouseButton(0))
 			{
 				target = ccts(sfw::getMouseX(), sfw::getMouseY());
-				clicked2 = true, bif = 0, needsPath = true;
+				clicked2 = true, bif = 0, needsPath = true, counter++;
+				onPath = false, DRIVE = false;
 			}
 			else if (!sfw::getMouseButton(0))
 				clicked2 = false;
+
+			if (counter == 5)
+				counter = 0, cleanMap();
+
 
 			//rotateBody(manualBodTarget);
 			if(target.x != -100)
@@ -85,23 +91,22 @@ TankBattleCommand Leka::update(TankBattleStateData *info)
 
 void tankBot::Leka::stateMachine()
 {
-	if (s_Body == WANDER || s_Body == HIDE) { s_Body = optimalState(); }
+	//if (s_Body == WANDER || s_Body == HIDE) { s_Body = optimalState(); }
 
 	//cout << stateName(s_Body) << " Node Status: ";
 
-	switch (s_Body)
+	/*switch (s_Body)
 	{
-	case WANDER:	//wander(); break;
-	case HIDE:		hide(); break;
-	case SEARCH:	search(); break;
 	case PURSUE:	pursue();
-	}
+	}*/
 
 	switch (s_Cannon)
 	{
 	case AIM:	aim(); break;
 	case SCAN:	scan();
 	}
+
+	locate();
 
 	//cout << stateName(s_Cannon) << endl;
 
@@ -172,4 +177,13 @@ void Leka::initMap()
 	//Pos and Tar nodes
 	map.addNode(Vec2()), map.addNode(Vec2());
 	map.nodes[38].open = true, map.nodes[39].open = true;
+}
+
+void Leka::cleanMap()
+{
+	for (int a = 0; a < map.getTotalNodes(); a++)
+		if (map.nodes[a].edge != nullptr)
+			for (int b = 0; b < map.nodes[a].totalEdges; b++)
+				if (b > 1)
+					map.nodes[a].edge[b].index = -1;
 }

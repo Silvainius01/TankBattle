@@ -1,6 +1,7 @@
 #pragma once
 #include "../TankBattle-net/TankBattleHeaders.h"
 #include "Math\Matrix3.h"
+#include "Graph\graph.h"
 using namespace cml;
 using namespace tankNet;
 

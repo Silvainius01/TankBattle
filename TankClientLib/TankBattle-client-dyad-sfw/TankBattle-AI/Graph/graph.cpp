@@ -195,8 +195,13 @@ void cml::Graph::recordPath(Node *end)
 	pathLength = 0;
 	int startIndex = findNodeIndex(*end);
 	//this will terminate if the path ends
-	for (int a = 0, b = startIndex; a < 1 && nodes[b].path.index != -1 && nodes[b].path.index != b; a++)
-		a--, pathLength++, b = nodes[b].path.index;
+	for (int a = 0, b = startIndex; a < 1 && nodes[b].path.index != -1; a++)
+	{
+		if(nodes[b].path.index != b)
+			a--, b = nodes[b].path.index;
+		
+		pathLength++;
+	}
 
 	delete[] path;
 	path = new int[pathLength];
@@ -204,10 +209,12 @@ void cml::Graph::recordPath(Node *end)
 
 	for (int a = 0, b = startIndex, c = pathLength - 1; a < 1 && b < totalNodes && c > -1; a++, c--)
 	{
-		if (nodes[b].path.index != -1)
+		if (b != -1)
 		{
-			path[c] = nodes[b].path.index;
-			a--, b = nodes[b].path.index;
+			path[c] = b;
+
+			if(b != nodes[b].path.index)
+				a--, b = nodes[b].path.index;
 		}
 	}
 }

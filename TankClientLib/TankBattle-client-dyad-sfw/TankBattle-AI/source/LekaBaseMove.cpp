@@ -3,9 +3,11 @@
 using namespace tankBot;
 
 int bif = 0;
+float t_driveTime = 0.0f;
 
-void Leka::rotateCannon(Vec2 target)
+void tankBot::Leka::rotateCannon(Vec2 target)
 {
+	target += (enemy[targetedEnemy].lastDir) * 6;
 	if (c_dir.getAngleBetween(pos - target) > 0) { decisions.cannon_left = 1; }
 	else { decisions.cannon_right = 1; }
 }
@@ -16,16 +18,17 @@ void Leka::rotateBody(Vec2 target)
 {
 	float ang = b_dir.getAngleBetween(pos - target);
 
-	if (std::abs(ang) <= 2.5f || std::abs(180 - std::abs(ang)) <= 2.5f)
+	//Doesn't return, theoretically stopping near 2.5 degrees off
+	//means we should be even closer if not directly on target next packet.
+	if (std::abs(ang) <= 3.5f || std::abs(180 - std::abs(ang)) <= 3.5f)
 	{
-		DRIVE = true, bif = 0;
+		DRIVE = true;
 		return;
 	}
-		
 
 	if (bif == 0)
 	{
-		cout << std::abs(ang) << " " << std::abs(180 - std::abs(ang)) << endl;
+		//cout << std::abs(ang) << " " << std::abs(180 - std::abs(ang)) << endl;
 
 		if (std::abs(ang) < std::abs(180 - std::abs(ang)))
 			bif = -1;
@@ -52,19 +55,25 @@ void Leka::rotateBody(Vec2 target)
 
 void Leka::drive(Vec2 target)
 {
+	if (t_driveTime <= 1.0f) t_driveTime += sfw::getDeltaTime();
+	else
+	{
+		t_driveTime = 0.0f;
+		float ang = b_dir.getAngleBetween(pos - target);
+		if (std::abs(ang) >= 3.5f && std::abs(180 - std::abs(ang)) >= 3.5f)
+		{ DRIVE = false, bif = 0; return; }
+	}
+
+
 	switch (bif)
 	{
 	case -1: decisions.body_down = 1; break;
 	case  1: decisions.body_up = 1; break;
 	}
 
-	if (onPath)
-	{
-		if (pos.getDistBetween(target) <= 1.0f)
-			DRIVE = false; placeInPath++;
-	}
-	else if (pos.getDistBetween(target) <= 2.5f)
-		DRIVE = false;
+	if (pos.getDistBetween(target) <= 5.0f)
+		DRIVE = false, placeInPath++;
+
 }
 
 void Leka::findPath(Vec2 target)
@@ -85,7 +94,7 @@ void Leka::findPath(Vec2 target)
 		if (test.x > pos.x && test.x > target.x + 5) { continue; }
 		if (test.x < pos.x && test.x < target.x - 5) { continue; }
 		test.y = slope(m, test.x, b);
-		if (test.getDistBetween(map.nodes[a].data) <= 5.0f)
+		if (test.getDistBetween(map.nodes[a].data) <= 7.0f)
 		{
 			switch (a)
 			{
@@ -120,7 +129,7 @@ void Leka::findPath(Vec2 target)
 		map.connectNodes(&map.nodes[38], &map.nodes[39]);
 
 	map.dijkstra(&map.nodes[38], &map.nodes[39]);
-	onPath = true, needsPath = false;
+	onPath = true, needsPath = false, DRIVE = true, placeInPath = 0;
 }
 
 void Leka::locate()
@@ -130,10 +139,11 @@ void Leka::locate()
 
 	if (onPath)
 	{
-		rotateBody(map.nodes[map.path[placeInPath]].data);
-
 		if (DRIVE)
 			drive(map.nodes[map.path[placeInPath]].data);
+		else
+			rotateBody(map.nodes[map.path[placeInPath]].data);
+
 
 		if (placeInPath >= map.pathLength)
 		{
@@ -142,9 +152,5 @@ void Leka::locate()
 			map.removeNode(map.nodes[39]);
 			placeInPath = 0;
 		}
-	}
-	else
-	{
-		
 	}
 }

@@ -5,14 +5,9 @@ using namespace tankBot;
 
 #define BulletDist 14.65f
 
-s_wander WanderData;
-s_hide HideData;
-s_search SearchData;
-s_pursuit PursuitData;
-s_scan ScanData;
-s_aim AimData;
+float t_PursueTime;
 
-void Leka::wander(s_wander &data)
+void Leka::wander()
 {
 
 }
@@ -34,10 +29,29 @@ void Leka::pursue()
 
 void Leka::scan()
 {
-	
+	decisions.body_right = 1;
+	decisions.cannon_right = 1;
+
+	for (int a = 0; a < 3; a++)
+	{
+		if (enemy[a].player.inSight)
+		{
+			s_Cannon = AIM;
+			needsPath = true;
+			targetedEnemy = a;
+			break;
+		}
+	}
 }
 
 void Leka::aim()
 {
-	
+	decisions.fire = 1;
+
+	if (enemy[targetedEnemy].player.inSight)
+	{
+		target = enemy[targetedEnemy].lastPos[0];
+	}
+	else
+		s_Cannon = SCAN;
 }

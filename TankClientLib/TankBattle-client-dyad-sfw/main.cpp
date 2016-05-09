@@ -1,6 +1,6 @@
-<<<<<<< HEAD
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 #include "AutoAgent.h"
 #include "HumanAgent.h"
@@ -9,22 +9,27 @@
 #undef NONE     // sfw defines NONE as one of its colors; we won't be needing that
 
 #define ORANGE 0xf89d28ff;
-#define GRAV -9.81f
-#define FIREPOINT 1.7f
+#define GRAV -9.81
+#define FIREPOINT 1.7
 
 using std::stringstream;
+using namespace cml;
+
+cml::Graph RelMap;
+
 tankNet::TankBattleCommand ex;
+//fuck::Graph RelMap;
 
 // use O or P to switch between players
 const char GAME_QUIT = 'L';
 const char GAME_TOGGLE_AI    = 'O';
 const char GAME_TOGGLE_HUMAN = 'P';
 
-//const int WINDOW_HEIGHT = 800;
-//const int WINDOW_WIDTH  = 400;
+bool clicked = false;
 
+int instances = 1;
+bool first2 = true;
 
-void printTacticalData(tankNet::TankBattleStateData * state);
 
 float gth(float val)
 {
@@ -43,7 +48,8 @@ enum ServerName
 	HOME,
 	TUNG,
 	JACOB,
-	DEDICATED
+	DEDICATED,
+	ASESS
 };
 char *getIPAdress(ServerName sn)
 {
@@ -52,6 +58,7 @@ char *getIPAdress(ServerName sn)
 	case TUNG: return "10.15.22.46";
 	case JACOB: return "10.15.22.81";
 	case DEDICATED: return "10.15.22.31";
+	case ASESS: return "10.15.22.73";
 	default: return "";
 	}
 }
@@ -64,14 +71,14 @@ unsigned g_BACK = 4;
 
 int main(int argc, char** argv)
 {
-	char * serverIPAddress = getIPAdress(HOME);
+    char * serverIPAddress = getIPAdress(DEDICATED);
 
     // handle console arguments
     if (argc > 2)
     {
         std::cout << "Unsupported number of arguments." << std::endl;
         std::cout << "Specify the IP address of the target server. Ex: " << argv[0] << " 127.0.0.1" << std::endl;
-
+		system("pause");
         return EXIT_FAILURE;
     }
     else if (argc == 2)
@@ -92,46 +99,70 @@ int main(int argc, char** argv)
     {
         auto serverData = tankNet::recieve();
 
-        // initialize SFW and assets
-		sfw::initContext(WINDOW_WIDTH, WINDOW_HEIGHT, "TankController");
+		
+
+	        // initialize SFW and assets
+        sfw::initContext(WINDOW_WIDTH, WINDOW_HEIGHT, "TankController");
 		sfw::setBackgroundColor(BLACK);
-		g_FONT = sfw::loadTextureMap("./res/fontmap.png", 16, 16);
+        g_FONT = sfw::loadTextureMap("./res/fontmap.png", 16, 16);
 		g_DMAP = sfw::loadTextureMap("./res/MapDiagramCrop.png");
 		g_DOTS = sfw::loadTextureMap("./res/circArrow.png");
 		g_BUCK = sfw::loadTextureMap("./res/Bucket.png");
 		g_BACK = sfw::loadTextureMap("./res/black.jpg");
 
-        AutoAgent  aiAgent;
+     //   AutoAgent  aiAgent;
         HumanAgent huAgent;
-        bool isHuman = false;
+        bool isHuman = true;
+		
+		
 
         ////////////////////////////////////////////////////////////
         /////////// Game Loop!
         while (sfw::stepContext() && tankNet::isConnected() && tankNet::isProvisioned() && !sfw::getKey(GAME_QUIT))
         {
+			
             // check TCP streams via dyad
             tankNet::update();
             if (tankNet::isConnected() == false) break;
-			sfw::drawTexture(g_FONT, sfw::getMouseX(), sfw::getMouseY(), 20, 20, 0, true, 88, MAGENTA);
 
             tankNet::TankBattleStateData * state = tankNet::recieve();
 
-            printTacticalData(state);
+			sfw::drawTexture(g_FONT, sfw::getMouseX(), sfw::getMouseY(), 20, 20, 0, true, 88, MAGENTA);
+			
+           
         
             // Toggle between human or computer player, for debug
-            if (sfw::getKey(GAME_TOGGLE_AI))    isHuman = false;
-            if (sfw::getKey(GAME_TOGGLE_HUMAN)) isHuman = true;
+			//if (sfw::getKey(GAME_TOGGLE_AI) && instances > 0)
+			//{
+			//	system("\"D:\\Programming\\School\\Assesments\\TankAI\\MyTanks-Broken\\TankBattle\\TankClientLib\\Debug\\TankBattle-client-dyad-sfw.exe\"");
+			//	//system("START TankBattle-client-dyad-sfw.exe");
+			//	instances--;
+			//}
 
             // use human agent or AI agent to determine the TBC
-            
+            /*tankNet::TankBattleCommand ex = isHuman ? huAgent.update(state)
+                                                    : aiAgent.update(state);*/
+
             // begin transmission
 			ex = leka.update(state);
-			tankNet::send(ex);
+            tankNet::send(ex);
+
+			/*if(first2)
+			{
+				RelMap = leka.LekaMap();
+				for (int a = 0; a < RelMap.getTotalNodes(); a++)
+					RelMap.nodes[a].data = Vec2{ gtw(RelMap.nodes[a].data.x), gth(RelMap.nodes[a].data.y) };
+
+				first2 = false;
+			}*/
+
+			printTacticalData(state);
         }
     }
     else
     {
         std::cout << "\nFailed to connect to server. Is the server online and not full?";
+		system("pause");
     }
 
     tankNet::term();
@@ -162,7 +193,7 @@ void drawArc(float radius, float angleStart, float angleStop, Vector2 pos, unsig
 	while (angleStop < angleStart) { angleStop += 2 * PI; }
 
 	for (float a = angleStart; a < angleStop; a += step)
-		if (a + step < angleStop)
+		if(a + step < angleStop)
 			sfw::drawLine(gtw(pos.x + radius * cos(a)), gth(pos.y + radius * sin(a)), gtw(pos.x + radius * cos(a + step)), gth(pos.y + radius * sin(a + step)), color);
 		else
 			sfw::drawLine(gtw(pos.x + radius * cos(a)), gth(pos.y + radius * sin(a)), gtw(pos.x + radius * cos(angleStop)), gth(pos.y + radius * sin(angleStop)), color);
@@ -181,7 +212,8 @@ void drawMap()
 				for (int b = 0, index = 0; b < leka.LekaMap().nodes[a].totalEdges; b++)
 				{
 					index = leka.LekaMap().nodes[a].edge[b].index;
-					sfw::drawLine(gtw(leka.LekaMap().nodes[a].data.x), gth(leka.LekaMap().nodes[a].data.y), gtw(leka.LekaMap().nodes[index].data.x), gth(leka.LekaMap().nodes[index].data.y), MAGENTA);
+					if(index != -1)
+						sfw::drawLine(gtw(leka.LekaMap().nodes[a].data.x), gth(leka.LekaMap().nodes[a].data.y), gtw(leka.LekaMap().nodes[index].data.x), gth(leka.LekaMap().nodes[index].data.y), MAGENTA);
 				}
 		}
 	}
@@ -204,9 +236,9 @@ void drawPlayer(int id, Vector2 pos, Vector2 ang, Vector2 can, bool canFire = tr
 	float bly;
 	unsigned color = getColor(id);
 	Vector2 relPos = Vector2{ gtw(pos[0]), gth(pos[1]) };
-	Vector2 view1 = Vector2{ std::cos((blah)* DEG2RAD) * 50, std::sin((blah)* DEG2RAD) * 50 };
-	Vector2 view2 = Vector2{ std::cos((blah2)* DEG2RAD) * 50, std::sin((blah2)* DEG2RAD) * 50 };
-
+	Vector2 view1 = Vector2{ std::cos((blah) * DEG2RAD) * 50, std::sin((blah) * DEG2RAD) * 50};
+	Vector2 view2 = Vector2{ std::cos((blah2) * DEG2RAD) * 50, std::sin((blah2) * DEG2RAD) * 50};
+	
 	if (id == -5)
 	{
 		if (canFire && ex.fireWish)
@@ -229,7 +261,7 @@ void drawPlayer(int id, Vector2 pos, Vector2 ang, Vector2 can, bool canFire = tr
 		if (!hasLanded)
 			sfw::drawTexture(g_BUCK, gtw((bulletPath.x * dist) + bulletPos.x), gth((bulletPath.y * dist) + bulletPos.y), 15, 15, (angle(bulletPath) * RAD2DEG) + 180);
 	}
-
+	
 
 	//Cannon
 	sfw::drawTexture(g_DOTS, relPos.x, relPos.y, 10.0f, 10.0f, blah2);
@@ -245,7 +277,7 @@ void drawPlayer(int id, Vector2 pos, Vector2 ang, Vector2 can, bool canFire = tr
 	sfw::drawLine(relPos.x, relPos.y, gtw(view1.x + pos.x), gth(view1.y + pos.y), color);
 	sfw::drawLine(relPos.x, relPos.y, gtw(view2.x + pos.x), gth(view2.y + pos.y), color);
 	drawArc(50, blah2, blah, pos, color);
-
+	
 }
 
 void printTacticalData(tankNet::TankBattleStateData * state)
@@ -256,23 +288,23 @@ void printTacticalData(tankNet::TankBattleStateData * state)
 	debugStrings << "Tacticool Report:\n";
 	for (int i = 0; i < state->tacticoolCount; ++i)
 	{
-	debugStrings << state->tacticoolData[i].playerID << "\n    ";
-	for (int j = 0; j < 3; ++j)
-	{
-	debugStrings << state->tacticoolData[i].lastKnownPosition[j] << " , ";
-	}
-	debugStrings << "\n    ";
-	for (int j = 0; j < 3; ++j)
-	{
-	debugStrings << state->tacticoolData[i].lastKnownDirection[j] << " , ";
-	}
+		debugStrings << state->tacticoolData[i].playerID << "\n    ";
+		for (int j = 0; j < 3; ++j)
+		{
+			debugStrings << state->tacticoolData[i].lastKnownPosition[j] << " , ";
+		}
+		debugStrings << "\n    ";
+		for (int j = 0; j < 3; ++j)
+		{
+			debugStrings << state->tacticoolData[i].lastKnownDirection[j] << " , ";
+		}
 
-	debugStrings << "\ninSight: " << (state->tacticoolData[i].inSight ? "true" : "false") << "\n";
+		debugStrings << "\ninSight: " << (state->tacticoolData[i].inSight ? "true" : "false") << "\n";
 	}
 
 	drawMap();
-
-		sfw::drawString(g_FONT, debugStrings.str().c_str(), 805, WINDOW_HEIGHT, 15, 15);
+	
+	sfw::drawString(g_FONT, debugStrings.str().c_str(), 805, WINDOW_HEIGHT, 15, 15);
 
 	Vector2 angle = Vector2::fromXZ(state->forward);
 	Vector2 cnAng = Vector2::fromXZ(state->cannonForward);
@@ -294,171 +326,4 @@ void printTacticalData(tankNet::TankBattleStateData * state)
 	}
 
 	sfw::drawTexture(g_DMAP, HALF_WIDTH, HALF_HEIGHT, HALF_WIDTH * 2, WINDOW_HEIGHT);
-=======
-#include <iostream>
-#include <sstream>
-
-#include "TankBattle-AI\Leka.h"
-#include "TankBattleNet.h"
-#include "sfwdraw.h"
-#undef NONE     // sfw defines NONE as one of its colors; we won't be needing that
-
-using std::stringstream;
-
-// declare controls for example client
-const char TANK_FWRD = 'W';
-const char TANK_BACK = 'S';
-const char TANK_LEFT = 'A';
-const char TANK_RIGT = 'D';
-
-const char TANK_FIRE = 'F';
-
-const char CANN_LEFT = 'Q';
-const char CANN_RIGT = 'E';
-
-const char GAME_QUIT = 'L';
-
-const int WINDOW_HEIGHT = 800;
-const int WINDOW_WIDTH = 800;
-
-tankNet::TankBattleCommand clientData()
-{
-	tankNet::TankBattleCommand data;
-	//tank actions
-	data.tankMove = decisions.body_up ? tankNet::TankMovementOptions::FWRD :
-		decisions.body_down ? tankNet::TankMovementOptions::BACK :
-		decisions.body_left ? tankNet::TankMovementOptions::LEFT :
-		decisions.body_right ? tankNet::TankMovementOptions::RIGHT :
-		tankNet::TankMovementOptions::HALT;
-
-	data.cannonMove = decisions.cannon_left ? tankNet::CannonMovementOptions::LEFT :
-		decisions.cannon_right ? tankNet::CannonMovementOptions::RIGHT :
-		tankNet::CannonMovementOptions::HALT;
-
-	data.fireWish = decisions.fire;
-
-	//game actions
-	if (sfw::getKey(GAME_QUIT))
-	{
-		data.msg = tankNet::TankBattleMessage::QUIT;
-	}
-
-	return data;
-}
-
-
-enum ServerName
-{
-	HOME,
-	TUNG,
-	NICOLE, NICOLE2
-};
-char *getIP(ServerName sn)
-{
-	//My IPs
-	//School Ether: 10.15.22.133
-	//School Wi-Fi: 10.15.22.125
-	//		  Home:
-	switch (sn)
-	{
-	case TUNG: return "10.15.22.46";
-	case NICOLE: return "10.15.22.118";
-	case NICOLE2: return "10.15.22.140";
-	default: return "";
-	}
-}
-
-
-int main(int argc, char** argv)
-{
-    char * serverIPAddress = getIP(HOME);
-
-    // handle console arguments
-    if (argc > 2)
-    {
-        std::cout << "Unsupported number of arguments." << std::endl;
-        std::cout << "Specify the IP address of the target server. Ex: " << argv[0] << " 127.0.0.1" << std::endl;
-
-        return EXIT_FAILURE;
-    }
-    else if (argc == 2)
-    {
-        serverIPAddress = argv[1];
-    }
-
-    // initialize networking
-    if (serverIPAddress[0] == '\0')
-    {
-        tankNet::init();
-    }
-    else
-    {
-        tankNet::init(serverIPAddress);
-    }
-
-    while (!tankNet::isProvisioned())
-    {
-		// block further execution until the server responds
-		// or until the client gives up on connecting
-        tankNet::update();
-    }
-
-    // if a connection was successful...
-    if (tankNet::isConnected() && tankNet::isProvisioned())
-    {
-        auto serverData = tankNet::recieve();
-
-        // initialize SFW and assets
-        sfw::initContext(WINDOW_WIDTH, WINDOW_HEIGHT, "TankController");
-		unsigned font = sfw::loadTextureMap("./res/fontmap.png", 16, 16);
-
-        while (sfw::stepContext() && tankNet::isConnected() && tankNet::isProvisioned())
-        {
-            // check TCP streams via dyad
-            tankNet::update();
-            if (tankNet::isConnected() == false)
-            {
-                break;
-            }
-
-            tankNet::TankBattleStateData * state = tankNet::recieve();
-
-            // diagnostic report of current state
-            stringstream debugStrings;
-            debugStrings << *state;
-            debugStrings << "Tacticool Report:\n";
-            for (int i = 0; i < state->tacticoolCount; ++i)
-            {
-                debugStrings << state->tacticoolData[i].playerID << "\n    ";
-                for (int j = 0; j < 3; ++j)
-                {
-                    debugStrings << state->tacticoolData[i].lastKnownPosition[j] << " , ";
-                }
-                debugStrings << "\n    ";
-                for (int j = 0; j < 3; ++j)
-                {
-                    debugStrings << state->tacticoolData[i].lastKnownDirection[j] << " , ";
-                }
-
-                debugStrings << "\ninSight: " << (state->tacticoolData[i].inSight ? "true" : "false") << "\n";
-            }
-
-            sfw::drawString(font, debugStrings.str().c_str(), 0, WINDOW_HEIGHT, 15, 15);
-			
-
-            // prepare message
-			leka.update(state);
-			send(clientData());
-        }
-    }
-    else
-    {
-        std::cout << "\nFailed to connect to server. Is the server online and not full?";
-    }
-
-    tankNet::term();
-    sfw::termContext();
-
-    return EXIT_SUCCESS;
->>>>>>> origin/dev
 }
